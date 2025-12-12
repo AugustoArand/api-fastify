@@ -20,7 +20,7 @@ function setupFormHandler() {
             color: document.getElementById('color').value,
             engine: document.getElementById('engine').value,
             price: parseFloat(document.getElementById('price').value),
-            description: document.getElementById('description').value || undefined
+            description: document.getElementById('description').value.trim() || undefined
         };
         
         try {

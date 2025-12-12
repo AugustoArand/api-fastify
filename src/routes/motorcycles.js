@@ -74,33 +74,16 @@ export default async function motorcycleRoutes(fastify, options) {
         return reply.code(404).send({ error: 'Moto não encontrada' });
       }
       
-      // Construir query de atualização dinâmica
+      // Construir query de atualização dinâmica com campos permitidos
+      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description'];
       const updates = [];
       const values = [];
       
-      if (data.model !== undefined) {
-        updates.push('model = ?');
-        values.push(data.model);
-      }
-      if (data.year !== undefined) {
-        updates.push('year = ?');
-        values.push(data.year);
-      }
-      if (data.color !== undefined) {
-        updates.push('color = ?');
-        values.push(data.color);
-      }
-      if (data.engine !== undefined) {
-        updates.push('engine = ?');
-        values.push(data.engine);
-      }
-      if (data.price !== undefined) {
-        updates.push('price = ?');
-        values.push(data.price);
-      }
-      if (data.description !== undefined) {
-        updates.push('description = ?');
-        values.push(data.description);
+      for (const field of allowedFields) {
+        if (data[field] !== undefined) {
+          updates.push(`${field} = ?`);
+          values.push(data[field]);
+        }
       }
       
       if (updates.length === 0) {
