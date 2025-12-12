@@ -146,6 +146,17 @@ A API retorna erros apropriados:
 - `404` - Recurso não encontrado
 - `500` - Erro interno do servidor
 
+## ⚠️ Considerações de Segurança
+
+Esta é uma aplicação de demonstração. Para uso em produção, considere adicionar:
+
+- **Rate Limiting**: Implementar limitação de taxa de requisições usando `@fastify/rate-limit`
+- **Autenticação**: Adicionar autenticação JWT ou OAuth
+- **CORS**: Configurar CORS adequadamente com `@fastify/cors`
+- **HTTPS**: Utilizar certificados SSL/TLS em produção
+- **Validação de entrada**: A validação com Zod já está implementada
+- **Sanitização de SQL**: Queries parametrizadas já estão implementadas
+
 ## 👨‍💻 Desenvolvimento
 
 O projeto utiliza módulos ES6 e está configurado com `type: "module"` no package.json.
