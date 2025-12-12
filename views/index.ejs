@@ -11,6 +11,11 @@
         <header>
             <h1>🏍️ Harley Davidson</h1>
             <p>Gerenciador de Cadastros de Motos</p>
+            <div class="header-actions">
+                <button class="btn btn-catalog" id="catalog-btn">
+                    📚 Catálogo por Motor
+                </button>
+            </div>
         </header>
 
         <main>
@@ -59,6 +64,27 @@
                 <div id="motorcycles-list"></div>
             </section>
         </main>
+    </div>
+
+    <!-- Modal de Catálogo por Motor -->
+    <div id="catalog-modal" class="catalog-modal">
+        <div class="catalog-content">
+            <div class="catalog-header">
+                <h2>📚 Catálogo Harley-Davidson por Tipo de Motor</h2>
+                <button class="btn-close" id="close-catalog-btn">✕ Voltar</button>
+            </div>
+            
+            <div class="catalog-search">
+                <input type="text" id="catalog-search-input" placeholder="Buscar modelo, motor, categoria...">
+                <button id="catalog-search-btn">🔍 Buscar</button>
+            </div>
+
+            <div class="catalog-stats" id="catalog-stats"></div>
+            
+            <div class="catalog-engines" id="catalog-engines"></div>
+            
+            <div class="catalog-motorcycles" id="catalog-motorcycles"></div>
+        </div>
     </div>
 
     <script src="/js/app.js"></script>

@@ -5,6 +5,7 @@ import ejs from 'ejs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import motorcycleRoutes from './routes/motorcycles.js';
+import catalogRoutes from './routes/catalog.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,6 +30,7 @@ fastify.register(fastifyView, {
 
 // Registrar rotas da API
 fastify.register(motorcycleRoutes);
+fastify.register(catalogRoutes);
 
 // Rota raiz
 fastify.get('/', async (request, reply) => {

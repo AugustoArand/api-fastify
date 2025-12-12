@@ -36,6 +36,13 @@ header p {
     color: #ccc;
 }
 
+.header-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
 main {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -134,6 +141,26 @@ textarea {
 
 .btn-secondary:hover {
     background: #777;
+}
+
+.btn-catalog {
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8533 100%);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+}
+
+.btn-catalog:hover {
+    background: linear-gradient(135deg, #ff8533 0%, #ff6b00 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.5);
 }
 
 .motorcycle-card {
@@ -265,4 +292,302 @@ textarea {
     padding: 15px;
     border-radius: 8px;
     margin-bottom: 20px;
+}
+
+/* Modal de Catálogo por Motor */
+.catalog-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.catalog-modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 30px;
+}
+
+.catalog-content {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 1400px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 2px solid #ff6b00;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.catalog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #ff6b00;
+}
+
+.catalog-header h2 {
+    color: #ff6b00;
+    margin: 0;
+}
+
+.btn-close {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-close:hover {
+    background: #dc2626;
+    transform: scale(1.05);
+}
+
+.catalog-search {
+    margin-bottom: 30px;
+    display: flex;
+    gap: 10px;
+}
+
+.catalog-search input {
+    flex: 1;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 107, 0, 0.3);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.catalog-search button {
+    background: linear-gradient(135deg, #ff6b00 0%, #ff8533 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.catalog-search button:hover {
+    background: linear-gradient(135deg, #ff8533 0%, #ff6b00 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 107, 0, 0.4);
+}
+
+.catalog-stats {
+    background: rgba(255, 107, 0, 0.1);
+    border: 1px solid rgba(255, 107, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.catalog-stats h3 {
+    color: #ff6b00;
+    margin-bottom: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.stat-item {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 107, 0, 0.2);
+}
+
+.stat-item .stat-value {
+    font-size: 2em;
+    color: #ff6b00;
+    font-weight: bold;
+    display: block;
+}
+
+.stat-item .stat-label {
+    color: #999;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.catalog-engines {
+    margin-bottom: 30px;
+}
+
+.catalog-engines h3 {
+    color: #ff6b00;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.engines-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.engine-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px;
+    background: rgba(255, 107, 0, 0.1);
+    border: 2px solid rgba(255, 107, 0, 0.3);
+    border-radius: 10px;
+    color: #ddd;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.engine-btn:hover {
+    background: rgba(255, 107, 0, 0.2);
+    border-color: #ff6b00;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(255, 107, 0, 0.4);
+}
+
+.engine-btn.active {
+    background: rgba(255, 107, 0, 0.3);
+    border-color: #ff6b00;
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.6);
+}
+
+.engine-name {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #ff8533;
+    text-align: center;
+}
+
+.engine-count {
+    font-size: 0.9em;
+    color: #999;
+}
+
+.catalog-motorcycles {
+    margin-top: 30px;
+}
+
+.catalog-motorcycles h3 {
+    color: #ff6b00;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5em;
+}
+
+.motorcycles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.catalog-card {
+    background: rgba(255, 107, 0, 0.1);
+    border: 1px solid rgba(255, 107, 0, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.catalog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 107, 0, 0.3);
+    border-color: #ff6b00;
+}
+
+.catalog-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.catalog-card h4 {
+    color: #ff8533;
+    margin-bottom: 10px;
+    font-size: 1.4em;
+}
+
+.catalog-card-detail {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+}
+
+.catalog-card-detail strong {
+    color: #999;
+}
+
+.catalog-card-detail span {
+    color: #ddd;
+}
+
+.catalog-card .price {
+    font-size: 1.5em;
+    color: #4ade80;
+    font-weight: bold;
+    margin: 15px 0;
+    text-align: center;
+}
+
+.catalog-card .description {
+    color: #aaa;
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin: 15px 0;
+}
+
+.catalog-card .category {
+    display: inline-block;
+    background: rgba(255, 107, 0, 0.3);
+    color: #ff8533;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .catalog-content {
+        padding: 20px;
+    }
+    
+    .engines-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .motorcycles-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
 }

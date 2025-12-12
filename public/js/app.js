@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMotorcycles();
     setupFormHandler();
     setupCancelButton();
+    setupCatalogModal();
 });
 
 // Configurar handler do formulário
@@ -212,4 +213,253 @@ async function deleteMotorcycle(id) {
     } catch (error) {
         alert('Erro ao excluir moto: ' + error.message);
     }
+}
+
+// ========================================
+// Catalog Modal Functions
+// ========================================
+
+let selectedEngine = null;
+let catalogData = null;
+
+// Configurar modal de catálogo
+function setupCatalogModal() {
+    const catalogBtn = document.getElementById('catalog-btn');
+    const closeBtn = document.getElementById('close-catalog-btn');
+    const modal = document.getElementById('catalog-modal');
+    const searchBtn = document.getElementById('catalog-search-btn');
+    const searchInput = document.getElementById('catalog-search-input');
+    
+    // Abrir modal
+    catalogBtn.addEventListener('click', async () => {
+        modal.classList.add('active');
+        await loadCatalogStats();
+        await loadEngineTypes();
+    });
+    
+    // Fechar modal
+    closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        selectedEngine = null;
+    });
+    
+    // Fechar ao clicar fora
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+            selectedEngine = null;
+        }
+    });
+    
+    // Buscar no catálogo
+    searchBtn.addEventListener('click', async () => {
+        const query = searchInput.value.trim();
+        if (query) {
+            await searchCatalog(query);
+        }
+    });
+    
+    // Buscar ao pressionar Enter
+    searchInput.addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const query = searchInput.value.trim();
+            if (query) {
+                await searchCatalog(query);
+            }
+        }
+    });
+}
+
+// Carregar estatísticas do catálogo
+async function loadCatalogStats() {
+    const statsContainer = document.getElementById('catalog-stats');
+    
+    try {
+        const response = await fetch('/api/catalog/stats');
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error('Erro ao carregar estatísticas');
+        }
+        
+        const stats = result.data;
+        const categoriesHTML = Object.entries(stats.categories)
+            .map(([cat, count]) => `
+                <div class="stat-item">
+                    <span class="stat-value">${count}</span>
+                    <span class="stat-label">${cat}</span>
+                </div>
+            `).join('');
+        
+        statsContainer.innerHTML = `
+            <h3>📊 Estatísticas do Catálogo</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value">${stats.totalEngineTypes}</span>
+                    <span class="stat-label">Tipos de Motor</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">${stats.totalMotorcycles}</span>
+                    <span class="stat-label">Motos no Catálogo</span>
+                </div>
+                ${categoriesHTML}
+            </div>
+        `;
+    } catch (error) {
+        statsContainer.innerHTML = `<div class="error-message">Erro ao carregar estatísticas</div>`;
+    }
+}
+
+// Carregar tipos de motores
+async function loadEngineTypes() {
+    const enginesContainer = document.getElementById('catalog-engines');
+    enginesContainer.innerHTML = '<div class="loading">Carregando motores...</div>';
+    
+    try {
+        const response = await fetch('/api/catalog/engines');
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error('Erro ao carregar motores');
+        }
+        
+        const engines = result.data;
+        
+        enginesContainer.innerHTML = `
+            <h3>🔧 Selecione o Tipo de Motor</h3>
+            <div class="engines-grid">
+                ${engines.map(engine => `
+                    <button class="engine-btn" data-engine="${engine.name}">
+                        <span class="engine-name">${engine.name}</span>
+                        <span class="engine-count">${engine.count} moto${engine.count > 1 ? 's' : ''}</span>
+                    </button>
+                `).join('')}
+            </div>
+        `;
+        
+        // Adicionar event listeners
+        document.querySelectorAll('.engine-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                document.querySelectorAll('.engine-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedEngine = btn.dataset.engine;
+                await loadMotorcyclesByEngine(selectedEngine);
+            });
+        });
+        
+    } catch (error) {
+        enginesContainer.innerHTML = `<div class="error-message">Erro ao carregar motores</div>`;
+    }
+}
+
+// Carregar motos por tipo de motor
+async function loadMotorcyclesByEngine(engineType) {
+    const motorcyclesContainer = document.getElementById('catalog-motorcycles');
+    motorcyclesContainer.innerHTML = '<div class="loading">Carregando motos...</div>';
+    
+    try {
+        const response = await fetch(`/api/catalog/engine/${encodeURIComponent(engineType)}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error('Erro ao carregar motos');
+        }
+        
+        const motorcycles = result.motorcycles;
+        
+        motorcyclesContainer.innerHTML = `
+            <h3>🏍️ ${engineType} (${motorcycles.length} modelo${motorcycles.length > 1 ? 's' : ''})</h3>
+            <div class="motorcycles-grid">
+                ${motorcycles.map(moto => renderCatalogCard(moto)).join('')}
+            </div>
+        `;
+        
+        // Scroll suave para as motos
+        motorcyclesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+    } catch (error) {
+        motorcyclesContainer.innerHTML = `<div class="error-message">Erro ao carregar motos</div>`;
+    }
+}
+
+// Buscar no catálogo
+async function searchCatalog(query) {
+    const motorcyclesContainer = document.getElementById('catalog-motorcycles');
+    motorcyclesContainer.innerHTML = '<div class="loading">Buscando...</div>';
+    
+    // Limpar seleção de motor
+    document.querySelectorAll('.engine-btn').forEach(b => b.classList.remove('active'));
+    selectedEngine = null;
+    
+    try {
+        const response = await fetch(`/api/catalog/search?q=${encodeURIComponent(query)}`);
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error('Erro ao buscar motos');
+        }
+        
+        const motorcycles = result.data;
+        
+        if (motorcycles.length === 0) {
+            motorcyclesContainer.innerHTML = `
+                <div class="empty-state">
+                    <p>🔍 Nenhuma moto encontrada</p>
+                    <small>Tente buscar por outro termo</small>
+                </div>
+            `;
+            return;
+        }
+        
+        motorcyclesContainer.innerHTML = `
+            <h3>🔍 Resultados da busca "${query}" (${motorcycles.length} encontrada${motorcycles.length > 1 ? 's' : ''})</h3>
+            <div class="motorcycles-grid">
+                ${motorcycles.map(moto => renderCatalogCard(moto)).join('')}
+            </div>
+        `;
+        
+        motorcyclesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+    } catch (error) {
+        motorcyclesContainer.innerHTML = `<div class="error-message">Erro ao buscar motos</div>`;
+    }
+}
+
+// Renderizar card de moto do catálogo
+function renderCatalogCard(moto) {
+    return `
+        <div class="catalog-card">
+            <img src="${moto.image}" alt="${moto.model}" onerror="this.src='https://via.placeholder.com/400x200/333/ff6b00?text=Harley-Davidson'">
+            <h4>${moto.model}</h4>
+            <div class="catalog-card-detail">
+                <strong>Ano:</strong>
+                <span>${moto.year}</span>
+            </div>
+            <div class="catalog-card-detail">
+                <strong>Motor:</strong>
+                <span>${moto.engine}</span>
+            </div>
+            ${moto.displacement ? `
+                <div class="catalog-card-detail">
+                    <strong>Cilindrada:</strong>
+                    <span>${moto.displacement}</span>
+                </div>
+            ` : ''}
+            ${moto.power ? `
+                <div class="catalog-card-detail">
+                    <strong>Potência:</strong>
+                    <span>${moto.power}</span>
+                </div>
+            ` : ''}
+            ${moto.torque ? `
+                <div class="catalog-card-detail">
+                    <strong>Torque:</strong>
+                    <span>${moto.torque}</span>
+                </div>
+            ` : ''}
+            <div class="price">R$ ${moto.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            ${moto.description ? `<div class="description">${moto.description}</div>` : ''}
+            <span class="category">${moto.category}</span>
+        </div>
+    `;
 }
