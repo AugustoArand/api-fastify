@@ -4,16 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Harley Davidson - Gerenciador de Motos</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=5">
 </head>
 <body>
+    <!-- Tela de Boas-Vindas -->
+    <div id="welcome-screen" class="welcome-screen active">
+        <div class="welcome-overlay"></div>
+        <div class="welcome-content">
+            <div class="welcome-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Harley-Davidson_logo.svg/1200px-Harley-Davidson_logo.svg.png" alt="Harley Davidson Logo">
+            </div>
+            <h1 class="welcome-title">Harley-Davidson</h1>
+            <p class="welcome-subtitle">Sistema de Gerenciamento de Motos</p>
+            <div class="welcome-tagline">
+                <p> Estilo de Vida Sobre Duas Rodas</p>
+            </div>
+            <button id="start-btn" class="btn-start">
+                <span>Iniciar</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
     <div class="container">
         <header>
-            <h1>🏍️ Harley Davidson</h1>
-            <p>Gerenciador de Cadastros de Motos</p>
+            <div class="header-content">
+                <div class="header-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Harley-Davidson_logo.svg/1200px-Harley-Davidson_logo.svg.png" alt="Harley Davidson Logo">
+                </div>
+                <div class="header-text">
+                    <h1> Harley Davidson</h1>
+                    <p>Cadastro ou consulta de motos Harley Davidson</p>
+                </div>
+            </div>
             <div class="header-actions">
                 <button class="btn btn-catalog" id="catalog-btn">
-                    📚 Catálogo por Motor
+                     Catálogo por Motor
                 </button>
             </div>
         </header>
@@ -70,7 +98,7 @@
     <div id="catalog-modal" class="catalog-modal">
         <div class="catalog-content">
             <div class="catalog-header">
-                <h2>📚 Catálogo Harley-Davidson por Tipo de Motor</h2>
+                <h2> Catálogo Harley-Davidson por Tipo de Motor</h2>
                 <button class="btn-close" id="close-catalog-btn">✕ Voltar</button>
             </div>
             

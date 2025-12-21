@@ -1,20 +1,61 @@
 // Estado da aplicação
 let editingId = null;
+let appInitialized = false;
 
-// Carregar motos ao iniciar
+// Controle da tela de boas-vindas
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Carregado');
+
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const startBtn = document.getElementById('start-btn');
+    const container = document.querySelector('.container');
+
+    console.log('Elementos encontrados:', {
+        welcomeScreen: !!welcomeScreen,
+        startBtn: !!startBtn,
+        container: !!container
+    });
+
+    if (startBtn && welcomeScreen && container) {
+        // Transição da tela de boas-vindas
+        startBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Botão clicado!');
+
+            welcomeScreen.classList.add('fade-out');
+
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                container.classList.add('show');
+                console.log('Transição concluída');
+
+                // Inicializar aplicação após transição
+                if (!appInitialized) {
+                    initializeApp();
+                    appInitialized = true;
+                }
+            }, 500);
+        });
+    } else {
+        console.error('Elementos não encontrados!');
+    }
+});
+
+// Inicializar aplicação
+function initializeApp() {
+    console.log('Inicializando aplicação...');
     loadMotorcycles();
     setupFormHandler();
     setupCancelButton();
     setupCatalogModal();
-});
+}
 
 // Configurar handler do formulário
 function setupFormHandler() {
     const form = document.getElementById('motorcycle-form');
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         const formData = {
             model: document.getElementById('model').value,
             year: parseInt(document.getElementById('year').value),
@@ -23,7 +64,7 @@ function setupFormHandler() {
             price: parseFloat(document.getElementById('price').value),
             description: document.getElementById('description').value.trim() || undefined
         };
-        
+
         try {
             if (editingId) {
                 await updateMotorcycle(editingId, formData);
@@ -55,7 +96,7 @@ function updateFormUI() {
     const submitBtn = document.querySelector('.btn-primary');
     const cancelBtn = document.getElementById('cancel-btn');
     const formTitle = document.querySelector('.form-section h2');
-    
+
     if (editingId) {
         submitBtn.textContent = 'Atualizar';
         cancelBtn.style.display = 'block';
@@ -76,12 +117,12 @@ async function createMotorcycle(data) {
         },
         body: JSON.stringify(data)
     });
-    
+
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Erro ao criar moto');
     }
-    
+
     return response.json();
 }
 
@@ -89,11 +130,11 @@ async function createMotorcycle(data) {
 async function loadMotorcycles() {
     const listContainer = document.getElementById('motorcycles-list');
     listContainer.innerHTML = '<div class="loading">Carregando...</div>';
-    
+
     try {
         const response = await fetch('/api/motorcycles');
         const motorcycles = await response.json();
-        
+
         if (motorcycles.length === 0) {
             listContainer.innerHTML = `
                 <div class="empty-state">
@@ -103,7 +144,7 @@ async function loadMotorcycles() {
             `;
             return;
         }
-        
+
         listContainer.innerHTML = motorcycles.map(motorcycle => createMotorcycleCard(motorcycle)).join('');
     } catch (error) {
         listContainer.innerHTML = `
@@ -157,17 +198,17 @@ async function editMotorcycle(id) {
     try {
         const response = await fetch(`/api/motorcycles/${id}`);
         const motorcycle = await response.json();
-        
+
         document.getElementById('model').value = motorcycle.model;
         document.getElementById('year').value = motorcycle.year;
         document.getElementById('color').value = motorcycle.color;
         document.getElementById('engine').value = motorcycle.engine;
         document.getElementById('price').value = motorcycle.price;
         document.getElementById('description').value = motorcycle.description || '';
-        
+
         editingId = id;
         updateFormUI();
-        
+
         // Scroll para o formulário
         document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
@@ -184,12 +225,12 @@ async function updateMotorcycle(id, data) {
         },
         body: JSON.stringify(data)
     });
-    
+
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Erro ao atualizar moto');
     }
-    
+
     return response.json();
 }
 
@@ -198,17 +239,17 @@ async function deleteMotorcycle(id) {
     if (!confirm('Tem certeza que deseja excluir esta moto?')) {
         return;
     }
-    
+
     try {
         const response = await fetch(`/api/motorcycles/${id}`, {
             method: 'DELETE'
         });
-        
+
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.error || 'Erro ao excluir moto');
         }
-        
+
         loadMotorcycles();
     } catch (error) {
         alert('Erro ao excluir moto: ' + error.message);
@@ -229,20 +270,20 @@ function setupCatalogModal() {
     const modal = document.getElementById('catalog-modal');
     const searchBtn = document.getElementById('catalog-search-btn');
     const searchInput = document.getElementById('catalog-search-input');
-    
+
     // Abrir modal
     catalogBtn.addEventListener('click', async () => {
         modal.classList.add('active');
         await loadCatalogStats();
         await loadEngineTypes();
     });
-    
+
     // Fechar modal
     closeBtn.addEventListener('click', () => {
         modal.classList.remove('active');
         selectedEngine = null;
     });
-    
+
     // Fechar ao clicar fora
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -250,7 +291,7 @@ function setupCatalogModal() {
             selectedEngine = null;
         }
     });
-    
+
     // Buscar no catálogo
     searchBtn.addEventListener('click', async () => {
         const query = searchInput.value.trim();
@@ -258,7 +299,7 @@ function setupCatalogModal() {
             await searchCatalog(query);
         }
     });
-    
+
     // Buscar ao pressionar Enter
     searchInput.addEventListener('keypress', async (e) => {
         if (e.key === 'Enter') {
@@ -273,15 +314,15 @@ function setupCatalogModal() {
 // Carregar estatísticas do catálogo
 async function loadCatalogStats() {
     const statsContainer = document.getElementById('catalog-stats');
-    
+
     try {
         const response = await fetch('/api/catalog/stats');
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error('Erro ao carregar estatísticas');
         }
-        
+
         const stats = result.data;
         const categoriesHTML = Object.entries(stats.categories)
             .map(([cat, count]) => `
@@ -290,7 +331,7 @@ async function loadCatalogStats() {
                     <span class="stat-label">${cat}</span>
                 </div>
             `).join('');
-        
+
         statsContainer.innerHTML = `
             <h3>📊 Estatísticas do Catálogo</h3>
             <div class="stats-grid">
@@ -314,17 +355,17 @@ async function loadCatalogStats() {
 async function loadEngineTypes() {
     const enginesContainer = document.getElementById('catalog-engines');
     enginesContainer.innerHTML = '<div class="loading">Carregando motores...</div>';
-    
+
     try {
         const response = await fetch('/api/catalog/engines');
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error('Erro ao carregar motores');
         }
-        
+
         const engines = result.data;
-        
+
         enginesContainer.innerHTML = `
             <h3>🔧 Selecione o Tipo de Motor</h3>
             <div class="engines-grid">
@@ -336,7 +377,7 @@ async function loadEngineTypes() {
                 `).join('')}
             </div>
         `;
-        
+
         // Adicionar event listeners
         document.querySelectorAll('.engine-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
@@ -346,7 +387,7 @@ async function loadEngineTypes() {
                 await loadMotorcyclesByEngine(selectedEngine);
             });
         });
-        
+
     } catch (error) {
         enginesContainer.innerHTML = `<div class="error-message">Erro ao carregar motores</div>`;
     }
@@ -356,27 +397,27 @@ async function loadEngineTypes() {
 async function loadMotorcyclesByEngine(engineType) {
     const motorcyclesContainer = document.getElementById('catalog-motorcycles');
     motorcyclesContainer.innerHTML = '<div class="loading">Carregando motos...</div>';
-    
+
     try {
         const response = await fetch(`/api/catalog/engine/${encodeURIComponent(engineType)}`);
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error('Erro ao carregar motos');
         }
-        
+
         const motorcycles = result.motorcycles;
-        
+
         motorcyclesContainer.innerHTML = `
             <h3>🏍️ ${engineType} (${motorcycles.length} modelo${motorcycles.length > 1 ? 's' : ''})</h3>
             <div class="motorcycles-grid">
                 ${motorcycles.map(moto => renderCatalogCard(moto)).join('')}
             </div>
         `;
-        
+
         // Scroll suave para as motos
         motorcyclesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
+
     } catch (error) {
         motorcyclesContainer.innerHTML = `<div class="error-message">Erro ao carregar motos</div>`;
     }
@@ -386,21 +427,21 @@ async function loadMotorcyclesByEngine(engineType) {
 async function searchCatalog(query) {
     const motorcyclesContainer = document.getElementById('catalog-motorcycles');
     motorcyclesContainer.innerHTML = '<div class="loading">Buscando...</div>';
-    
+
     // Limpar seleção de motor
     document.querySelectorAll('.engine-btn').forEach(b => b.classList.remove('active'));
     selectedEngine = null;
-    
+
     try {
         const response = await fetch(`/api/catalog/search?q=${encodeURIComponent(query)}`);
         const result = await response.json();
-        
+
         if (!result.success) {
             throw new Error('Erro ao buscar motos');
         }
-        
+
         const motorcycles = result.data;
-        
+
         if (motorcycles.length === 0) {
             motorcyclesContainer.innerHTML = `
                 <div class="empty-state">
@@ -410,16 +451,16 @@ async function searchCatalog(query) {
             `;
             return;
         }
-        
+
         motorcyclesContainer.innerHTML = `
             <h3>🔍 Resultados da busca "${query}" (${motorcycles.length} encontrada${motorcycles.length > 1 ? 's' : ''})</h3>
             <div class="motorcycles-grid">
                 ${motorcycles.map(moto => renderCatalogCard(moto)).join('')}
             </div>
         `;
-        
+
         motorcyclesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        
+
     } catch (error) {
         motorcyclesContainer.innerHTML = `<div class="error-message">Erro ao buscar motos</div>`;
     }
