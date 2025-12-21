@@ -9,7 +9,7 @@
     "dev": "node --watch src/server.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "20.x"
   },
   "keywords": [
     "fastify",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@fastify/static": "^6.12.0",
     "@fastify/view": "^8.2.0",
-    "better-sqlite3": "^9.2.2",
+    "better-sqlite3": "^11.7.0",
     "ejs": "^3.1.9",
     "fastify": "^4.25.2",
     "zod": "^3.22.4"
