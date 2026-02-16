@@ -8,8 +8,8 @@ export default async function motorcycleRoutes(fastify, options) {
       const data = motorcycleSchema.parse(request.body);
 
       const query = `
-        INSERT INTO motorcycles (model, year, color, engine, price, description)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO motorcycles (model, year, color, engine, price, description, engine_type_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
       `;
 
@@ -19,7 +19,8 @@ export default async function motorcycleRoutes(fastify, options) {
         data.color,
         data.engine,
         data.price,
-        data.description || null
+        data.description || null,
+        data.engine_type_id || null
       ]);
 
       return reply.code(201).send(result.rows[0]);
@@ -34,7 +35,13 @@ export default async function motorcycleRoutes(fastify, options) {
   // Listar todas as motos
   fastify.get('/api/motorcycles', async (request, reply) => {
     try {
-      const result = await pool.query('SELECT * FROM motorcycles ORDER BY created_at DESC');
+      const query = `
+        SELECT m.*, et.name as engine_type_name 
+        FROM motorcycles m 
+        LEFT JOIN engine_types et ON m.engine_type_id = et.id 
+        ORDER BY m.created_at DESC
+      `;
+      const result = await pool.query(query);
       return reply.send(result.rows);
     } catch (error) {
       return reply.code(500).send({ error: 'Erro ao listar motos' });
@@ -74,7 +81,7 @@ export default async function motorcycleRoutes(fastify, options) {
       }
 
       // Construir query de atualização dinâmica
-      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description'];
+      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description', 'engine_type_id'];
       const updates = [];
       const values = [];
       let paramCount = 1;

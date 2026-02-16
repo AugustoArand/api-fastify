@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { initDatabase } from './db/postgres.js';
 import motorcycleRoutes from './routes/motorcycles.js';
 import catalogRoutes from './routes/catalog.js';
+import engineTypeRoutes from './routes/engineTypes.js';
 import { authRoutes } from './routes/auth.js';
 
 dotenv.config();
@@ -37,6 +38,7 @@ fastify.decorate('authenticate', async function (request, reply) {
 fastify.register(authRoutes, { prefix: '/api/auth' });
 fastify.register(motorcycleRoutes);
 fastify.register(catalogRoutes);
+fastify.register(engineTypeRoutes);
 
 // Rota raiz da API
 fastify.get('/', async (request, reply) => {

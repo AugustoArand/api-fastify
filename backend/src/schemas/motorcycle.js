@@ -9,7 +9,8 @@ export const motorcycleSchema = z.object({
     { message: 'Ano inválido' }
   ),
   color: z.string().min(1, 'Cor é obrigatória'),
-  engine: z.string().min(1, 'Motor é obrigatório'),
+  engine: z.string().optional(),
+  engine_type_id: z.number().int().positive().optional(),
   price: z.number().positive('Preço deve ser positivo'),
   description: z.string().optional()
 });
@@ -21,7 +22,8 @@ export const updateMotorcycleSchema = z.object({
     { message: 'Ano inválido' }
   ).optional(),
   color: z.string().min(1).optional(),
-  engine: z.string().min(1).optional(),
+  engine: z.string().optional(),
+  engine_type_id: z.number().int().positive().optional(),
   price: z.number().positive().optional(),
   description: z.string().optional()
 });
