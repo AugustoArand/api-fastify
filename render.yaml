@@ -1,4 +1,5 @@
 services:
+  # Backend API
   - type: web
     name: api-harley-davidson
     runtime: node
@@ -12,3 +13,16 @@ services:
         value: 20.18.1
       - key: NODE_ENV
         value: production
+
+  # Frontend
+  - type: web
+    name: harley-davidson-frontend
+    runtime: static
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://api-harley-davidson.onrender.com
