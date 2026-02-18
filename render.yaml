@@ -15,8 +15,9 @@ services:
         value: production
 
   # Frontend
-  - type: static
+  - type: web
     name: harley-davidson-frontend
+    env: static
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     rootDir: frontend
