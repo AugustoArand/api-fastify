@@ -17,7 +17,7 @@ const fastify = Fastify({
 // Configurar CORS para permitir requisições do frontend
 const allowedOrigins = [
   'http://localhost:5173',  // Desenvolvimento local
-  'https://harley-davidson-frontend.onrender.com',  // Frontend Render (planejado)
+  'https://api-fastify-harley-front.onrender.com',  // Frontend Render (planejado)
   'https://api-fastify-harley-front.onrender.com'  // Frontend Render (atual)
 ];
 
