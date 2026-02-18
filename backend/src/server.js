@@ -15,8 +15,20 @@ const fastify = Fastify({
 });
 
 // Configurar CORS para permitir requisições do frontend
+const allowedOrigins = [
+  'http://localhost:5173',  // Desenvolvimento local
+  'https://harley-davidson-frontend.onrender.com',  // Desenvolvimento local alternativo
+  'https://harley-davidson-frontend.onrender.com'  // Produção - AJUSTE COM SUA URL
+];
+
 fastify.register(fastifyCors, {
-  origin: true, // Em produção, especifique os domínios permitidos
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 });
 
