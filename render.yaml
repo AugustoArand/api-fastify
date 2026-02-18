@@ -4,8 +4,9 @@ services:
     runtime: node
     plan: free
     region: oregon
-    buildCommand: npm install && cd backend && npm install
-    startCommand: node backend/src/server.js
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_VERSION
         value: 20.18.1
