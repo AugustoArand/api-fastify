@@ -5,7 +5,7 @@ services:
     plan: free
     region: oregon
     buildCommand: npm install && cd backend && npm install
-    startCommand: npm start
+    startCommand: node backend/src/server.js
     envVars:
       - key: NODE_VERSION
         value: 20.18.1
