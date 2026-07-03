@@ -207,9 +207,9 @@ const closeDialog = () => {
 }
 
 .modern-auth-card {
-  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%) !important;
-  border: 1px solid rgba(255, 107, 0, 0.2) !important;
-  border-radius: 20px !important;
+  background: var(--hd-surface) !important;
+  border: 1px solid var(--hd-line-strong) !important;
+  border-radius: var(--hd-radius-lg) !important;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
 }
@@ -218,45 +218,34 @@ const closeDialog = () => {
 .auth-header {
   padding: 40px 32px 32px;
   text-align: center;
-  background: linear-gradient(180deg, rgba(255, 107, 0, 0.05) 0%, transparent 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, rgba(232, 93, 4, 0.06) 0%, transparent 100%);
+  border-bottom: 1px solid var(--hd-line);
 }
 
 .auth-icon-wrapper {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
-  background: rgba(255, 107, 0, 0.1);
-  border: 2px solid rgba(255, 107, 0, 0.3);
-  border-radius: 16px;
+  width: 60px;
+  height: 60px;
+  background: rgba(232, 93, 4, 0.1);
+  border: 1px solid rgba(232, 93, 4, 0.3);
+  border-radius: 14px;
   margin-bottom: 20px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.4);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px 10px rgba(255, 107, 0, 0);
-  }
 }
 
 .auth-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-family: var(--hd-font-display);
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--hd-paper);
   margin-bottom: 8px;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.3px;
 }
 
 .auth-subtitle {
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hd-ink-muted);
   margin: 0;
   font-weight: 400;
 }
@@ -276,38 +265,38 @@ const closeDialog = () => {
   gap: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--hd-ink-muted);
   margin-bottom: 10px;
   letter-spacing: 0.3px;
 }
 
 .modern-input :deep(.v-field) {
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: rgba(245, 241, 234, 0.03) !important;
+  border: 1px solid var(--hd-line);
+  border-radius: 10px;
   transition: all 0.3s ease;
 }
 
 .modern-input :deep(.v-field:hover) {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 107, 0, 0.3);
+  background: rgba(245, 241, 234, 0.05) !important;
+  border-color: rgba(232, 93, 4, 0.3);
 }
 
 .modern-input :deep(.v-field--focused) {
-  background: rgba(255, 255, 255, 0.05) !important;
-  border-color: #FF6B00 !important;
-  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.1);
+  background: rgba(245, 241, 234, 0.05) !important;
+  border-color: var(--hd-orange) !important;
+  box-shadow: 0 0 0 3px rgba(232, 93, 4, 0.12);
 }
 
 .modern-input :deep(.v-field__input) {
-  color: #ffffff;
+  color: var(--hd-paper);
   font-size: 1rem;
   padding: 12px 16px;
   min-height: 48px;
 }
 
 .modern-input :deep(.v-field__input::placeholder) {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--hd-ink-faint);
 }
 
 .modern-input :deep(.v-field__outline) {
@@ -316,26 +305,26 @@ const closeDialog = () => {
 
 /* Alert */
 .modern-alert {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   border: 1px solid currentColor;
 }
 
 /* Submit Button */
 .auth-submit-btn {
   height: 52px !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   font-size: 1.05rem !important;
   font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%) !important;
-  box-shadow: 0 4px 20px rgba(255, 107, 0, 0.4) !important;
+  background: var(--hd-orange) !important;
+  box-shadow: 0 4px 20px rgba(232, 93, 4, 0.4) !important;
   transition: all 0.3s ease !important;
 }
 
 .auth-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 28px rgba(255, 107, 0, 0.6) !important;
+  box-shadow: 0 6px 28px rgba(232, 93, 4, 0.55) !important;
 }
 
 .auth-submit-btn:active {
@@ -345,7 +334,7 @@ const closeDialog = () => {
 /* Footer */
 .auth-footer {
   padding: 24px 32px 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--hd-line);
 }
 
 .auth-divider {
@@ -361,7 +350,7 @@ const closeDialog = () => {
   top: 50%;
   width: calc(50% - 30px);
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--hd-line);
 }
 
 .auth-divider::before {
@@ -374,7 +363,7 @@ const closeDialog = () => {
 
 .auth-divider span {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--hd-ink-faint);
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
@@ -382,28 +371,28 @@ const closeDialog = () => {
 
 .auth-switch-btn {
   height: 48px !important;
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   font-weight: 600 !important;
   text-transform: none !important;
-  border: 2px solid rgba(255, 107, 0, 0.3) !important;
+  border: 1px solid rgba(232, 93, 4, 0.3) !important;
   transition: all 0.3s ease !important;
 }
 
 .auth-switch-btn:hover {
-  background: rgba(255, 107, 0, 0.1) !important;
-  border-color: rgba(255, 107, 0, 0.6) !important;
+  background: rgba(232, 93, 4, 0.1) !important;
+  border-color: rgba(232, 93, 4, 0.6) !important;
   transform: translateY(-2px);
 }
 
 .auth-cancel-btn {
   height: 40px !important;
   text-transform: none !important;
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: var(--hd-ink-faint) !important;
   font-weight: 500 !important;
 }
 
 .auth-cancel-btn:hover {
-  color: rgba(255, 255, 255, 0.8) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--hd-ink-muted) !important;
+  background: rgba(245, 241, 234, 0.05) !important;
 }
 </style>

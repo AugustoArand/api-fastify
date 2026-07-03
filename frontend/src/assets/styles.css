@@ -1,4 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Surfaces */
+  --hd-black: #0a0a0b;
+  --hd-surface: #17171a;
+  --hd-surface-2: #1e1e22;
+  --hd-line: rgba(245, 241, 234, 0.09);
+  --hd-line-strong: rgba(245, 241, 234, 0.18);
+
+  /* Ink */
+  --hd-paper: #f5f1ea;
+  --hd-ink-muted: rgba(245, 241, 234, 0.62);
+  --hd-ink-faint: rgba(245, 241, 234, 0.4);
+
+  /* Brand */
+  --hd-orange: #e85d04;
+  --hd-orange-strong: #ff7a1a;
+  --hd-brass: #c9a227;
+  --hd-brass-soft: rgba(201, 162, 39, 0.16);
+
+  /* Type */
+  --hd-font-display: 'Oswald', 'Roboto Condensed', sans-serif;
+  --hd-font-body: 'Inter', 'Roboto', sans-serif;
+
+  /* Shape */
+  --hd-radius: 10px;
+  --hd-radius-lg: 16px;
+}
 
 * {
   margin: 0;
@@ -7,9 +35,9 @@
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.90)),
-    url('https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1600') center/cover fixed no-repeat;
+  font-family: var(--hd-font-body);
+  background: var(--hd-black);
+  color: var(--hd-paper);
   min-height: 100vh;
 }
 
@@ -28,33 +56,141 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: var(--hd-black);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FF6B00;
+  background: var(--hd-orange);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF8533;
+  background: var(--hd-orange-strong);
 }
 
-/* Card hover effects */
-.v-card {
-  transition: all 0.3s ease !important;
+/* ---------------------------------------------------- */
+/* Shared "archive" design system utilities              */
+/* ---------------------------------------------------- */
+
+.hd-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--hd-font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--hd-brass);
 }
 
-.v-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(255, 107, 0, 0.3) !important;
+.hd-eyebrow::before {
+  content: '';
+  width: 18px;
+  height: 2px;
+  background: var(--hd-brass);
 }
 
-/* Animations */
+.hd-display {
+  font-family: var(--hd-font-display);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--hd-paper);
+}
+
+/* Give every Vuetify heading the display face so titles stay consistent
+   without having to retrofit every component individually. */
+.text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6,
+.v-toolbar-title {
+  font-family: var(--hd-font-display) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+}
+
+.hd-panel {
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-radius-lg);
+}
+
+.hd-card {
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-radius);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.hd-card:hover {
+  border-color: rgba(232, 93, 4, 0.4);
+  transform: translateY(-3px);
+}
+
+/* Corner-bracket "museum placard" motif */
+.hd-bracket {
+  position: relative;
+}
+
+.hd-bracket::before,
+.hd-bracket::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--hd-brass);
+  opacity: 0.7;
+}
+
+.hd-bracket::before {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.hd-bracket::after {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+}
+
+.hd-divider {
+  height: 1px;
+  background: var(--hd-line);
+  border: none;
+}
+
+.hd-mono-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  font-weight: 600;
+}
+
+/* Buttons */
+.hd-btn {
+  text-transform: none !important;
+  font-family: var(--hd-font-body);
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+  border-radius: 8px !important;
+}
+
+.hd-btn-primary {
+  background: var(--hd-orange) !important;
+  box-shadow: 0 4px 16px rgba(232, 93, 4, 0.3) !important;
+  transition: all 0.25s ease !important;
+}
+
+.hd-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(232, 93, 4, 0.5) !important;
+}
+
+/* Animations (used sparingly) */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -69,7 +205,7 @@ body {
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(-50px);
+    transform: translateX(-40px);
   }
   to {
     opacity: 1;

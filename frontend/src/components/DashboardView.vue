@@ -4,13 +4,11 @@
     <header class="dashboard-header">
       <div class="header-content">
         <div class="header-left">
-          <v-img
-            src="https://companieslogo.com/img/orig/HOG-3d48b7ae.png?t=1648268969"
-            max-width="50"
-            class="logo"
-          />
+          <div class="header-logo">
+            <v-icon color="primary" size="26">mdi-motorbike</v-icon>
+          </div>
           <div class="header-info">
-            <h1 class="header-title">Harley Davidson</h1>
+            <h1 class="header-title hd-display">Harley Davidson</h1>
             <p class="header-subtitle">Bem-vindo, {{ user?.name }}!</p>
           </div>
         </div>
@@ -20,7 +18,7 @@
             variant="flat"
             prepend-icon="mdi-view-grid"
             @click="openCatalog"
-            class="action-btn"
+            class="hd-btn hd-btn-primary action-btn"
           >
             Catálogo
           </v-btn>
@@ -29,7 +27,7 @@
             variant="outlined"
             prepend-icon="mdi-logout"
             @click="handleLogout"
-            class="action-btn"
+            class="hd-btn action-btn"
           >
             Sair
           </v-btn>
@@ -413,7 +411,7 @@ const stats = ref([
     title: 'Modelos no Acervo',
     value: '60+',
     icon: 'mdi-motorbike',
-    color: 'linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%)'
+    color: 'linear-gradient(135deg, #E85D04 0%, #FF7A1A 100%)'
   },
   {
     title: 'Tipos de Motor',
@@ -446,7 +444,7 @@ const noticias = ref([
     title: 'Harley-Davidson Revela Nova Linha Elétrica LiveWire',
     excerpt: 'A icônica fabricante de motocicletas apresenta sua mais recente inovação em mobilidade elétrica com maior autonomia e desempenho.',
     category: 'Lançamento',
-    categoryColor: '#FF6B00'
+    categoryColor: '#E85D04'
   },
   {
     id: 2,
@@ -487,8 +485,8 @@ const emplacamentos = ref([
   {
     category: 'Modelos Mais Emplacados',
     data: [
-      { label: 'Street Glide', value: '2.845', percentage: 100, color: '#FF6B00' },
-      { label: 'Road King', value: '2.120', percentage: 74, color: '#FF8C00' },
+      { label: 'Street Glide', value: '2.845', percentage: 100, color: '#E85D04' },
+      { label: 'Road King', value: '2.120', percentage: 74, color: '#FF7A1A' },
       { label: 'Fat Boy', value: '1.890', percentage: 66, color: '#FFA726' },
       { label: 'Sportster S', value: '1.654', percentage: 58, color: '#FFB74D' }
     ]
@@ -650,14 +648,14 @@ onMounted(async () => {
 <style scoped>
 .dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+  background: var(--hd-black);
 }
 
 /* Header */
 .dashboard-header {
-  background: rgba(20, 20, 20, 0.95);
+  background: rgba(10, 10, 11, 0.85);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 107, 0, 0.2);
+  border-bottom: 1px solid var(--hd-line);
   padding: 20px 0;
   position: sticky;
   top: 0;
@@ -679,8 +677,15 @@ onMounted(async () => {
   gap: 16px;
 }
 
-.logo {
-  border-radius: 8px;
+.header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: rgba(232, 93, 4, 0.1);
+  border: 1px solid rgba(232, 93, 4, 0.25);
+  border-radius: 10px;
 }
 
 .header-info {
@@ -689,16 +694,14 @@ onMounted(async () => {
 }
 
 .header-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 1.4rem;
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: 0.5px;
 }
 
 .header-subtitle {
   font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hd-ink-muted);
   margin: 0;
 }
 
@@ -708,7 +711,6 @@ onMounted(async () => {
 }
 
 .action-btn {
-  text-transform: none;
   font-weight: 600;
 }
 
@@ -719,10 +721,9 @@ onMounted(async () => {
 
 /* Stats Cards */
 .stat-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-radius-lg);
   padding: 24px;
   display: flex;
   align-items: center;
@@ -732,8 +733,7 @@ onMounted(async () => {
 
 .stat-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(255, 107, 0, 0.4);
-  box-shadow: 0 8px 32px rgba(255, 107, 0, 0.2);
+  border-color: rgba(232, 93, 4, 0.4);
 }
 
 .stat-icon {
@@ -750,38 +750,39 @@ onMounted(async () => {
 }
 
 .stat-value {
+  font-family: var(--hd-font-display);
   font-size: 1.75rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 600;
+  color: var(--hd-paper);
   margin: 0 0 4px 0;
 }
 
 .stat-title {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hd-ink-muted);
   margin: 0;
   font-weight: 500;
 }
 
 /* Section Cards */
 .section-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  background: var(--hd-surface);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-radius-lg);
   overflow: hidden;
 }
 
 .section-header {
   padding: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 107, 0, 0.05);
+  border-bottom: 1px solid var(--hd-line);
+  background: rgba(232, 93, 4, 0.04);
 }
 
 .section-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-family: var(--hd-font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--hd-paper);
   margin: 0;
   display: flex;
   align-items: center;
@@ -795,7 +796,7 @@ onMounted(async () => {
 .empty-state {
   text-align: center;
   padding: 48px 24px;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hd-ink-muted);
 }
 
 /* Motorcycles Grid */
@@ -806,15 +807,15 @@ onMounted(async () => {
 }
 
 .motorcycle-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: var(--hd-surface-2);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-radius);
   padding: 16px;
   transition: all 0.3s ease;
 }
 
 .motorcycle-card:hover {
-  border-color: rgba(255, 107, 0, 0.4);
+  border-color: rgba(232, 93, 4, 0.4);
   transform: translateY(-2px);
 }
 
@@ -827,14 +828,15 @@ onMounted(async () => {
 
 .moto-year {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--hd-ink-faint);
   font-weight: 600;
 }
 
 .moto-model {
+  font-family: var(--hd-font-display);
   font-size: 1.1rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 600;
+  color: var(--hd-paper);
   margin: 0 0 12px 0;
 }
 
@@ -849,7 +851,7 @@ onMounted(async () => {
   align-items: center;
   gap: 8px;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--hd-ink-muted);
 }
 
 /* News List */
@@ -861,7 +863,7 @@ onMounted(async () => {
 
 .news-item {
   padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--hd-line);
 }
 
 .news-item:last-child {
@@ -874,22 +876,23 @@ onMounted(async () => {
   align-items: center;
   gap: 6px;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--hd-ink-faint);
   margin-bottom: 8px;
   font-weight: 600;
 }
 
 .news-title {
+  font-family: var(--hd-font-display);
   font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 600;
+  color: var(--hd-paper);
   margin: 0 0 8px 0;
   line-height: 1.4;
 }
 
 .news-excerpt {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hd-ink-muted);
   line-height: 1.5;
   margin: 0 0 12px 0;
 }
@@ -902,8 +905,8 @@ onMounted(async () => {
 .news-category {
   font-size: 0.7rem;
   padding: 4px 12px;
-  border-radius: 12px;
-  color: #ffffff;
+  border-radius: 4px;
+  color: var(--hd-paper);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -911,16 +914,17 @@ onMounted(async () => {
 
 /* Chart Cards */
 .chart-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  background: var(--hd-surface-2);
+  border: 1px solid var(--hd-line);
+  border-radius: var(--hd-radius);
   padding: 20px;
 }
 
 .chart-title {
+  font-family: var(--hd-font-display);
   font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 600;
+  color: var(--hd-paper);
   margin: 0 0 20px 0;
 }
 
@@ -938,13 +942,13 @@ onMounted(async () => {
 
 .bar-label {
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--hd-ink-muted);
   font-weight: 600;
 }
 
 .bar-wrapper {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: rgba(245, 241, 234, 0.05);
+  border-radius: 4px;
   height: 32px;
   overflow: hidden;
   position: relative;
@@ -952,7 +956,7 @@ onMounted(async () => {
 
 .bar-fill {
   height: 100%;
-  border-radius: 8px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -964,7 +968,7 @@ onMounted(async () => {
 .bar-value {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--hd-paper);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 

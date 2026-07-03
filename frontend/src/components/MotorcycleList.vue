@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-8" color="surface" style="border: 1px solid rgba(255, 107, 0, 0.3)">
+  <v-card class="elevation-8" color="surface" style="border: 1px solid rgba(232, 93, 4, 0.3)">
     <v-card-title class="text-h5 text-center text-primary">
       Motos Cadastradas
     </v-card-title>

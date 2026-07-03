@@ -1,5 +1,5 @@
 <template>
-  <v-card class="elevation-8" color="surface" style="border: 1px solid rgba(255, 107, 0, 0.3)">
+  <v-card class="elevation-8" color="surface" style="border: 1px solid rgba(232, 93, 4, 0.3)">
     <v-card-title class="text-h5 text-center text-primary">
       {{ isEditing ? 'Editar Moto' : 'Cadastrar Nova Moto' }}
     </v-card-title>
@@ -25,19 +25,32 @@
           class="mb-2"
         />
 
-        <v-text-field
-          v-model="form.color"
-          label="Cor"
+        <v-select
+          v-model="form.engine_type_id"
+          :items="engineTypes"
+          item-title="name"
+          item-value="id"
+          label="Tipo de Motor"
           :rules="[rules.required]"
+          variant="outlined"
+          color="primary"
+          class="mb-2"
+          :loading="loadingEngineTypes"
+          no-data-text="Nenhum tipo de motor disponível"
+        />
+
+        <v-text-field
+          v-model="form.engine"
+          label="Motor"
+          placeholder="Ex: 1200cc, versão especial, etc."
           variant="outlined"
           color="primary"
           class="mb-2"
         />
 
         <v-text-field
-          v-model="form.engine"
-          label="Motor"
-          placeholder="ex: Milwaukee-Eight 107"
+          v-model="form.color"
+          label="Cor"
           :rules="[rules.required]"
           variant="outlined"
           color="primary"
@@ -97,8 +110,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useMotorcycleStore } from '@/store/motorcycles'
+import { engineTypesApi } from '@/services/api'
 import { storeToRefs } from 'pinia'
 
 const motorcycleStore = useMotorcycleStore()
@@ -106,6 +120,8 @@ const { editingMotorcycle } = storeToRefs(motorcycleStore)
 
 const formRef = ref(null)
 const loading = ref(false)
+const loadingEngineTypes = ref(false)
+const engineTypes = ref([])
 const snackbar = ref({
   show: false,
   message: '',
@@ -117,6 +133,7 @@ const form = ref({
   year: new Date().getFullYear(),
   color: '',
   engine: '',
+  engine_type_id: null,
   price: 0,
   description: ''
 })
@@ -173,6 +190,7 @@ const resetForm = () => {
     year: new Date().getFullYear(),
     color: '',
     engine: '',
+    engine_type_id: null,
     price: 0,
     description: ''
   }
@@ -188,6 +206,24 @@ const showSnackbar = (message, color) => {
     color
   }
 }
+
+const fetchEngineTypes = async () => {
+  loadingEngineTypes.value = true
+  try {
+    const response = await engineTypesApi.getAll()
+    engineTypes.value = response.data || []
+  } catch (error) {
+    console.error('Erro ao carregar tipos de motor:', error)
+    showSnackbar('Erro ao carregar tipos de motor', 'error')
+  } finally {
+    loadingEngineTypes.value = false
+  }
+}
+
+// Carregar tipos de motor ao montar o componente
+onMounted(() => {
+  fetchEngineTypes()
+})
 
 // Watch for editing changes
 watch(editingMotorcycle, (newVal) => {

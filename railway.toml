@@ -1,0 +1,13 @@
+# railway.toml — Configuração de deploy no Railway
+# Documentação: https://docs.railway.app/reference/railway-toml
+
+[build]
+builder = "nixpacks"
+buildCommand = "cd backend && npm install"
+
+[deploy]
+startCommand = "cd backend && npm start"
+healthcheckPath = "/"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 3

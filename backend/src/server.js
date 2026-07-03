@@ -2,7 +2,8 @@ import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
 import dotenv from 'dotenv';
-import { initDatabase } from './db/postgres.js';
+import { connectDatabase } from './db/mongoose.js';
+import { seedEngineTypes } from './db/models/EngineType.js';
 import motorcycleRoutes from './routes/motorcycles.js';
 import catalogRoutes from './routes/catalog.js';
 import engineTypeRoutes from './routes/engineTypes.js';
@@ -16,8 +17,8 @@ const fastify = Fastify({
 
 // Configurar CORS para permitir requisições do frontend
 const allowedOrigins = [
-  'http://localhost:5173',  // Desenvolvimento local
-  'https://api-fastify-harley-front.onrender.com'  // Frontend Render
+  'http://localhost:5173',              // Desenvolvimento local
+  'https://api-fastify-harley-front.onrender.com' // Frontend Render (manter compatibilidade)
 ];
 
 fastify.register(fastifyCors, {
@@ -56,10 +57,13 @@ fastify.get('/', async (request, reply) => {
   return {
     name: 'Harley Davidson API',
     version: '1.0.0',
+    database: 'MongoDB',
     description: 'API RESTful para gerenciamento de motos Harley Davidson',
     endpoints: {
       motorcycles: '/api/motorcycles',
-      catalog: '/api/catalog'
+      catalog: '/api/catalog',
+      engineTypes: '/api/engine-types',
+      auth: '/api/auth'
     }
   };
 });
@@ -67,10 +71,13 @@ fastify.get('/', async (request, reply) => {
 // Iniciar servidor
 const start = async () => {
   try {
-    // Inicializar banco de dados
-    await initDatabase();
+    // Conectar ao MongoDB
+    await connectDatabase();
 
-    const port = process.env.PORT || 3000;
+    // Popular dados iniciais de tipos de motor
+    await seedEngineTypes();
+
+    const port = parseInt(process.env.PORT || '3000');
     const host = process.env.HOST || '0.0.0.0';
 
     await fastify.listen({ port, host });

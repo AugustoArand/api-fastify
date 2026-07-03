@@ -1,56 +1,58 @@
-import { pool } from '../db/postgres.js';
+import { EngineType } from '../db/models/EngineType.js';
+import { Motorcycle } from '../db/models/Motorcycle.js';
+import mongoose from 'mongoose';
 
 export default async function engineTypeRoutes(fastify, options) {
-    // Listar todos os tipos de motor
-    fastify.get('/api/engine-types', async (request, reply) => {
-        try {
-            const result = await pool.query(
-                'SELECT * FROM engine_types ORDER BY name'
-            );
-            return reply.send(result.rows);
-        } catch (error) {
-            console.error('Erro ao listar tipos de motor:', error);
-            return reply.code(500).send({ error: 'Erro ao listar tipos de motor' });
-        }
-    });
+  // Listar todos os tipos de motor
+  fastify.get('/api/engine-types', async (request, reply) => {
+    try {
+      const engineTypes = await EngineType.find().sort({ name: 1 });
+      return reply.send(engineTypes);
+    } catch (error) {
+      console.error('Erro ao listar tipos de motor:', error);
+      return reply.code(500).send({ error: 'Erro ao listar tipos de motor' });
+    }
+  });
 
-    // Obter um tipo de motor por ID
-    fastify.get('/api/engine-types/:id', async (request, reply) => {
-        try {
-            const { id } = request.params;
-            const result = await pool.query(
-                'SELECT * FROM engine_types WHERE id = $1',
-                [id]
-            );
+  // Obter um tipo de motor por ID
+  fastify.get('/api/engine-types/:id', async (request, reply) => {
+    try {
+      const { id } = request.params;
 
-            if (result.rows.length === 0) {
-                return reply.code(404).send({ error: 'Tipo de motor não encontrado' });
-            }
+      if (!mongoose.isValidObjectId(id)) {
+        return reply.code(400).send({ error: 'ID inválido' });
+      }
 
-            return reply.send(result.rows[0]);
-        } catch (error) {
-            console.error('Erro ao buscar tipo de motor:', error);
-            return reply.code(500).send({ error: 'Erro ao buscar tipo de motor' });
-        }
-    });
+      const engineType = await EngineType.findById(id);
 
-    // Listar motos por tipo de motor
-    fastify.get('/api/engine-types/:id/motorcycles', async (request, reply) => {
-        try {
-            const { id } = request.params;
-            const result = await pool.query(
-                `SELECT m.*, et.name as engine_type_name 
-         FROM motorcycles m 
-         LEFT JOIN engine_types et ON m.engine_type_id = et.id 
-         WHERE m.engine_type_id = $1 
-         ORDER BY m.year DESC`,
-                [id]
-            );
+      if (!engineType) {
+        return reply.code(404).send({ error: 'Tipo de motor não encontrado' });
+      }
 
-            return reply.send(result.rows);
-        } catch (error) {
-            console.error('Erro ao listar motos por tipo de motor:', error);
-            return reply.code(500).send({ error: 'Erro ao listar motos' });
-        }
-    });
+      return reply.send(engineType);
+    } catch (error) {
+      console.error('Erro ao buscar tipo de motor:', error);
+      return reply.code(500).send({ error: 'Erro ao buscar tipo de motor' });
+    }
+  });
+
+  // Listar motos por tipo de motor
+  fastify.get('/api/engine-types/:id/motorcycles', async (request, reply) => {
+    try {
+      const { id } = request.params;
+
+      if (!mongoose.isValidObjectId(id)) {
+        return reply.code(400).send({ error: 'ID inválido' });
+      }
+
+      const motorcycles = await Motorcycle.find({ engineType: id })
+        .populate('engineType', 'name')
+        .sort({ year: -1 });
+
+      return reply.send(motorcycles);
+    } catch (error) {
+      console.error('Erro ao listar motos por tipo de motor:', error);
+      return reply.code(500).send({ error: 'Erro ao listar motos' });
+    }
+  });
 }

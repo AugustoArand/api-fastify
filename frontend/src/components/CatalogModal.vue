@@ -134,8 +134,9 @@
                   >
                     <template #error>
                       <v-img
-                        src="https://via.placeholder.com/400x200/333/ff6b00?text=Harley-Davidson"
+                        src="/images/fat-boy-softail-2001.jpg"
                         height="200"
+                        class="bg-surface"
                       />
                     </template>
                   </v-img>
@@ -296,26 +297,24 @@ onMounted(() => {
 
 <style scoped>
 .engine-btn {
-  transition: all 0.3s ease;
-  border: 2px solid rgba(255, 255, 255, 0.3) !important;
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: white !important;
+  transition: all 0.25s ease;
+  border: 1px solid var(--hd-line-strong) !important;
+  background-color: rgba(245, 241, 234, 0.03) !important;
+  color: var(--hd-paper) !important;
 }
 
 .engine-btn:hover {
-  border-color: #FF6B00 !important;
-  background-color: rgba(255, 107, 0, 0.15) !important;
+  border-color: var(--hd-orange) !important;
+  background-color: rgba(232, 93, 4, 0.12) !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.4) !important;
 }
 
 .engine-btn-selected {
-  border: 3px solid #FF6B00 !important;
-  background-color: rgba(255, 107, 0, 0.2) !important;
-  box-shadow: 0 0 20px rgba(255, 107, 0, 0.6) !important;
+  border: 2px solid var(--hd-orange) !important;
+  background-color: rgba(232, 93, 4, 0.18) !important;
 }
 
 .engine-btn-selected:hover {
-  background-color: rgba(255, 107, 0, 0.25) !important;
+  background-color: rgba(232, 93, 4, 0.22) !important;
 }
 </style>

@@ -7,15 +7,15 @@ import 'vuetify/styles'
 const harleyTheme = {
     dark: true,
     colors: {
-        primary: '#FF6B00',
-        secondary: '#FF8533',
-        accent: '#FFA500',
-        error: '#FF5252',
-        info: '#2196F3',
+        primary: '#E85D04',
+        secondary: '#C9A227',
+        accent: '#C9A227',
+        error: '#E5484D',
+        info: '#4A9EFF',
         success: '#4CAF50',
-        warning: '#FFC107',
-        background: '#0a0a0a',
-        surface: '#1a1a1a',
+        warning: '#C9A227',
+        background: '#0a0a0b',
+        surface: '#17171a',
     }
 }
 

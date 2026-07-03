@@ -1,11 +1,11 @@
 {
   "name": "harley-davidson-api",
-  "version":  "1.0.0",
+  "version": "1.0.0",
   "description": "API RESTful para gerenciamento de cadastros de motos Harley Davidson",
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node src/server.js",
+    "start": "node src/server.js",
     "dev": "node --watch src/server.js"
   },
   "engines": {
@@ -15,7 +15,8 @@
     "fastify",
     "api",
     "harley-davidson",
-    "motorcycles"
+    "motorcycles",
+    "mongodb"
   ],
   "author": "",
   "license": "ISC",
@@ -25,7 +26,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "fastify": "^4.25.2",
-    "pg": "^8.11.3",
+    "mongoose": "^8.24.1",
     "zod": "^3.22.4"
   }
 }

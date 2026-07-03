@@ -1,5 +1,7 @@
-import { pool } from '../db/postgres.js';
-import { motorcycleSchema, updateMotorcycleSchema, motorcycleIdSchema } from '../schemas/motorcycle.js';
+import { Motorcycle } from '../db/models/Motorcycle.js';
+import { EngineType } from '../db/models/EngineType.js';
+import { motorcycleSchema, updateMotorcycleSchema } from '../schemas/motorcycle.js';
+import mongoose from 'mongoose';
 
 export default async function motorcycleRoutes(fastify, options) {
   // Criar uma nova moto
@@ -7,23 +9,26 @@ export default async function motorcycleRoutes(fastify, options) {
     try {
       const data = motorcycleSchema.parse(request.body);
 
-      const query = `
-        INSERT INTO motorcycles (model, year, color, engine, price, description, engine_type_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *
-      `;
+      // Resolver engine_type_id (número legacy) → ObjectId do MongoDB
+      let engineTypeRef = null;
+      if (data.engine_type_id) {
+        engineTypeRef = data.engine_type_id; // aceita ObjectId diretamente
+      }
 
-      const result = await pool.query(query, [
-        data.model,
-        data.year,
-        data.color,
-        data.engine,
-        data.price,
-        data.description || null,
-        data.engine_type_id || null
-      ]);
+      const motorcycle = new Motorcycle({
+        model: data.model,
+        year: data.year,
+        color: data.color,
+        engine: data.engine,
+        price: data.price,
+        description: data.description,
+        engineType: engineTypeRef,
+      });
 
-      return reply.code(201).send(result.rows[0]);
+      await motorcycle.save();
+      await motorcycle.populate('engineType', 'name');
+
+      return reply.code(201).send(motorcycle);
     } catch (error) {
       if (error.name === 'ZodError') {
         return reply.code(400).send({ error: 'Dados inválidos', details: error.errors });
@@ -35,14 +40,11 @@ export default async function motorcycleRoutes(fastify, options) {
   // Listar todas as motos
   fastify.get('/api/motorcycles', async (request, reply) => {
     try {
-      const query = `
-        SELECT m.*, et.name as engine_type_name 
-        FROM motorcycles m 
-        LEFT JOIN engine_types et ON m.engine_type_id = et.id 
-        ORDER BY m.created_at DESC
-      `;
-      const result = await pool.query(query);
-      return reply.send(result.rows);
+      const motorcycles = await Motorcycle.find()
+        .populate('engineType', 'name')
+        .sort({ createdAt: -1 });
+
+      return reply.send(motorcycles);
     } catch (error) {
       return reply.code(500).send({ error: 'Erro ao listar motos' });
     }
@@ -51,19 +53,20 @@ export default async function motorcycleRoutes(fastify, options) {
   // Obter uma moto por ID
   fastify.get('/api/motorcycles/:id', async (request, reply) => {
     try {
-      const { id } = motorcycleIdSchema.parse(request.params);
+      const { id } = request.params;
 
-      const result = await pool.query('SELECT * FROM motorcycles WHERE id = $1', [id]);
+      if (!mongoose.isValidObjectId(id)) {
+        return reply.code(400).send({ error: 'ID inválido' });
+      }
 
-      if (result.rows.length === 0) {
+      const motorcycle = await Motorcycle.findById(id).populate('engineType', 'name');
+
+      if (!motorcycle) {
         return reply.code(404).send({ error: 'Moto não encontrada' });
       }
 
-      return reply.send(result.rows[0]);
+      return reply.send(motorcycle);
     } catch (error) {
-      if (error.name === 'ZodError') {
-        return reply.code(400).send({ error: 'ID inválido' });
-      }
       return reply.code(500).send({ error: 'Erro ao buscar moto' });
     }
   });
@@ -71,39 +74,42 @@ export default async function motorcycleRoutes(fastify, options) {
   // Atualizar uma moto
   fastify.put('/api/motorcycles/:id', async (request, reply) => {
     try {
-      const { id } = motorcycleIdSchema.parse(request.params);
-      const data = updateMotorcycleSchema.parse(request.body);
+      const { id } = request.params;
 
-      // Verificar se a moto existe
-      const existing = await pool.query('SELECT * FROM motorcycles WHERE id = $1', [id]);
-      if (existing.rows.length === 0) {
-        return reply.code(404).send({ error: 'Moto não encontrada' });
+      if (!mongoose.isValidObjectId(id)) {
+        return reply.code(400).send({ error: 'ID inválido' });
       }
 
-      // Construir query de atualização dinâmica
-      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description', 'engine_type_id'];
-      const updates = [];
-      const values = [];
-      let paramCount = 1;
+      const data = updateMotorcycleSchema.parse(request.body);
+
+      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description'];
+      const updateData = {};
 
       for (const field of allowedFields) {
         if (data[field] !== undefined) {
-          updates.push(`${field} = $${paramCount}`);
-          values.push(data[field]);
-          paramCount++;
+          updateData[field] = data[field];
         }
       }
 
-      if (updates.length === 0) {
+      if (data.engine_type_id !== undefined) {
+        updateData.engineType = data.engine_type_id || null;
+      }
+
+      if (Object.keys(updateData).length === 0) {
         return reply.code(400).send({ error: 'Nenhum campo para atualizar' });
       }
 
-      values.push(id);
+      const motorcycle = await Motorcycle.findByIdAndUpdate(
+        id,
+        updateData,
+        { new: true, runValidators: true }
+      ).populate('engineType', 'name');
 
-      const query = `UPDATE motorcycles SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`;
-      const result = await pool.query(query, values);
+      if (!motorcycle) {
+        return reply.code(404).send({ error: 'Moto não encontrada' });
+      }
 
-      return reply.send(result.rows[0]);
+      return reply.send(motorcycle);
     } catch (error) {
       if (error.name === 'ZodError') {
         return reply.code(400).send({ error: 'Dados inválidos', details: error.errors });
@@ -115,21 +121,20 @@ export default async function motorcycleRoutes(fastify, options) {
   // Deletar uma moto
   fastify.delete('/api/motorcycles/:id', async (request, reply) => {
     try {
-      const { id } = motorcycleIdSchema.parse(request.params);
+      const { id } = request.params;
 
-      // Verificar se a moto existe
-      const existing = await pool.query('SELECT * FROM motorcycles WHERE id = $1', [id]);
-      if (existing.rows.length === 0) {
+      if (!mongoose.isValidObjectId(id)) {
+        return reply.code(400).send({ error: 'ID inválido' });
+      }
+
+      const motorcycle = await Motorcycle.findByIdAndDelete(id);
+
+      if (!motorcycle) {
         return reply.code(404).send({ error: 'Moto não encontrada' });
       }
 
-      await pool.query('DELETE FROM motorcycles WHERE id = $1', [id]);
-
       return reply.code(204).send();
     } catch (error) {
-      if (error.name === 'ZodError') {
-        return reply.code(400).send({ error: 'ID inválido' });
-      }
       return reply.code(500).send({ error: 'Erro ao deletar moto' });
     }
   });

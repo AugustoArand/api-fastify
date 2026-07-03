@@ -63,7 +63,7 @@ export async function authRoutes(fastify, options) {
 
       const isValidPassword = await UserService.validatePassword(
         validatedData.password,
-        user.password
+        user
       );
 
       console.log('🔐 Senha válida:', isValidPassword);
