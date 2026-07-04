@@ -29,13 +29,13 @@
           v-model="form.engine_type_id"
           :items="engineTypes"
           item-title="name"
-          item-value="id"
+          item-value="_id"
           label="Tipo de Motor"
-          :rules="[rules.required]"
           variant="outlined"
           color="primary"
           class="mb-2"
           :loading="loadingEngineTypes"
+          clearable
           no-data-text="Nenhum tipo de motor disponível"
         />
 
@@ -163,11 +163,15 @@ const handleSubmit = async () => {
   loading.value = true
 
   try {
+    // Remove engine_type_id se vazio para não falhar validação do backend
+    const payload = { ...form.value }
+    if (!payload.engine_type_id) delete payload.engine_type_id
+
     if (isEditing.value) {
-      await motorcycleStore.updateMotorcycle(editingMotorcycle.value.id, form.value)
+      await motorcycleStore.updateMotorcycle(editingMotorcycle.value._id, payload)
       showSnackbar('Moto atualizada com sucesso!', 'success')
     } else {
-      await motorcycleStore.createMotorcycle(form.value)
+      await motorcycleStore.createMotorcycle(payload)
       showSnackbar('Moto cadastrada com sucesso!', 'success')
     }
     

@@ -13,7 +13,7 @@ export const motorcycleSchema = z.object({
   ),
   color: z.string().min(1, 'Cor é obrigatória'),
   engine: z.string().optional(),
-  engine_type_id: z.string().regex(objectIdRegex, 'ID de tipo de motor inválido').optional(),
+  engine_type_id: z.string().regex(objectIdRegex, 'ID de tipo de motor inválido').nullable().optional(),
   price: z.number().positive('Preço deve ser positivo'),
   description: z.string().optional()
 });
@@ -26,7 +26,7 @@ export const updateMotorcycleSchema = z.object({
   ).optional(),
   color: z.string().min(1).optional(),
   engine: z.string().optional(),
-  engine_type_id: z.string().regex(objectIdRegex, 'ID de tipo de motor inválido').optional(),
+  engine_type_id: z.string().regex(objectIdRegex, 'ID de tipo de motor inválido').nullable().optional(),
   price: z.number().positive().optional(),
   description: z.string().optional()
 });
