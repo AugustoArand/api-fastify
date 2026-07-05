@@ -122,12 +122,12 @@
             <v-row dense>
               <v-col
                 v-for="moto in motorcycles"
-                :key="moto.model"
+                :key="moto._id || `${moto.model}-${moto.year}`"
                 cols="12" sm="6" md="4" lg="3"
               >
                 <v-card class="elevation-2" hover>
                   <v-img
-                    :src="moto.image"
+                    :src="moto.image || '/images/fat-boy-softail-2001.jpg'"
                     height="200"
                     cover
                     class="text-white"

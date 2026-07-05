@@ -23,6 +23,14 @@
             Catálogo
           </v-btn>
           <v-btn
+            variant="outlined"
+            prepend-icon="mdi-account-circle"
+            @click="showAccount = true"
+            class="hd-btn action-btn"
+          >
+            Minha Conta
+          </v-btn>
+          <v-btn
             color="error"
             variant="outlined"
             prepend-icon="mdi-logout"
@@ -39,6 +47,9 @@
     <v-dialog v-model="showCatalog" max-width="1200" persistent>
       <CatalogModal :modelValue="showCatalog" @close="showCatalog = false" />
     </v-dialog>
+
+    <!-- Minha Conta Modal -->
+    <AccountModal v-model="showAccount" />
 
     <!-- Dialog para Adicionar/Editar Moto -->
     <v-dialog v-model="showAddDialog" max-width="600">
@@ -120,7 +131,19 @@
               :rules="[v => !!v || 'Preço é obrigatório']"
               class="mb-2"
             />
-            
+
+            <v-text-field
+              v-model="motoData.image"
+              label="Imagem (URL, opcional)"
+              variant="outlined"
+              density="comfortable"
+              prepend-inner-icon="mdi-image"
+              hint="Cole o link de uma foto da moto"
+              persistent-hint
+              :rules="[v => !v || /^https?:\/\//.test(v) || 'URL deve começar com http:// ou https://']"
+              class="mb-2"
+            />
+
             <v-textarea
               v-model="motoData.description"
               label="Descrição (opcional)"
@@ -202,54 +225,85 @@
                   </v-btn>
                 </div>
                 <div v-else>
-                  <v-table theme="dark">
-                    <thead>
-                      <tr>
-                        <th>Modelo</th>
-                        <th>Ano</th>
-                        <th>Categoria Motor</th>
-                        <th>Motor</th>
-                        <th>Cor</th>
-                        <th>Preço</th>
-                        <th>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="moto in databaseMotorcycles" :key="moto.id">
-                        <td class="font-weight-bold">{{ moto.model }}</td>
-                        <td>{{ moto.year }}</td>
-                        <td>
-                          <v-chip 
-                            v-if="moto.engine_type_name" 
-                            color="primary" 
-                            size="small"
-                            variant="outlined"
-                          >
-                            {{ moto.engine_type_name }}
-                          </v-chip>
-                          <span v-else class="text-grey">-</span>
-                        </td>
-                        <td>{{ moto.engine || '-' }}</td>
-                        <td>{{ moto.color }}</td>
-                        <td>R$ {{ formatPrice(moto.price) }}</td>
-                        <td>
-                          <v-btn 
-                            icon="mdi-pencil" 
-                            size="x-small" 
-                            variant="text"
-                            @click="editMoto(moto)"
-                          ></v-btn>
-                          <v-btn 
-                            icon="mdi-delete" 
-                            size="x-small" 
-                            variant="text"
-                            color="error"
-                            @click="deleteMoto(moto.id)"
-                          ></v-btn>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </v-table>
+                  <v-text-field
+                    v-model="motoSearch"
+                    label="Buscar por modelo, motor, cor..."
+                    prepend-inner-icon="mdi-magnify"
+                    variant="outlined"
+                    density="comfortable"
+                    color="primary"
+                    hide-details
+                    clearable
+                    class="mb-4 table-search-field"
+                  />
+
+                  <div v-if="filteredMotorcycles.length === 0" class="empty-state">
+                    <v-icon size="48" color="grey-darken-1">mdi-file-search-outline</v-icon>
+                    <p class="mt-4">Nenhuma moto encontrada para "{{ motoSearch }}"</p>
+                  </div>
+                  <div v-else class="table-scroll">
+                    <v-table theme="dark">
+                      <thead>
+                        <tr>
+                          <th>Foto</th>
+                          <th>Modelo</th>
+                          <th>Ano</th>
+                          <th>Categoria Motor</th>
+                          <th>Motor</th>
+                          <th>Cor</th>
+                          <th>Preço</th>
+                          <th>Ações</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr v-for="moto in filteredMotorcycles" :key="moto.id">
+                          <td>
+                            <v-avatar rounded size="44">
+                              <v-img
+                                :src="moto.image || '/images/fat-boy-softail-2001.jpg'"
+                                cover
+                              >
+                                <template #error>
+                                  <v-img src="/images/fat-boy-softail-2001.jpg" cover />
+                                </template>
+                              </v-img>
+                            </v-avatar>
+                          </td>
+                          <td class="font-weight-bold">{{ moto.model }}</td>
+                          <td>{{ moto.year }}</td>
+                          <td>
+                            <v-chip
+                              v-if="moto.engine_type_name"
+                              color="primary"
+                              size="small"
+                              variant="outlined"
+                            >
+                              {{ moto.engine_type_name }}
+                            </v-chip>
+                            <span v-else class="text-grey">-</span>
+                          </td>
+                          <td>{{ moto.engine || '-' }}</td>
+                          <td>{{ moto.color }}</td>
+                          <td>R$ {{ formatPrice(moto.price) }}</td>
+                          <td>
+                            <v-btn
+                              icon="mdi-pencil"
+                              size="x-small"
+                              variant="text"
+                              @click="editMoto(moto)"
+                            ></v-btn>
+                            <v-btn
+                              icon="mdi-delete"
+                              size="x-small"
+                              variant="text"
+                              color="error"
+                              @click="deleteMoto(moto.id)"
+                            ></v-btn>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </div>
                 </div>
               </div>
             </div>
@@ -365,6 +419,19 @@
                     </div>
                   </article>
                 </div>
+
+                <v-btn
+                  block
+                  variant="outlined"
+                  color="primary"
+                  append-icon="mdi-open-in-new"
+                  href="https://news.google.com/search?q=Harley-Davidson&hl=pt-BR&gl=BR&ceid=BR:pt-419"
+                  target="_blank"
+                  rel="noopener"
+                  class="hd-btn mt-4 news-more-btn"
+                >
+                  Ver mais notícias
+                </v-btn>
               </div>
             </div>
           </v-col>
@@ -379,13 +446,16 @@ import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { motorcyclesApi, engineTypesApi } from '../services/api';
 import CatalogModal from './CatalogModal.vue';
+import AccountModal from './AccountModal.vue';
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 const showCatalog = ref(false);
+const showAccount = ref(false);
 
 // Motos do banco de dados
 const databaseMotorcycles = ref([]);
+const motoSearch = ref('');
 const loadingMotos = ref(false);
 const showAddDialog = ref(false);
 const editingMoto = ref(null);
@@ -402,7 +472,8 @@ const motoData = ref({
   engine_type_id: null,
   color: '',
   price: 0,
-  description: ''
+  description: '',
+  image: ''
 });
 
 // Stats Cards
@@ -432,6 +503,17 @@ const stats = ref([
     color: 'linear-gradient(135deg, #7B1FA2 0%, #9C27B0 100%)'
   }
 ]);
+
+// Motos filtradas pela busca
+const filteredMotorcycles = computed(() => {
+  const query = motoSearch.value?.trim().toLowerCase();
+  if (!query) return databaseMotorcycles.value;
+
+  return databaseMotorcycles.value.filter((moto) => {
+    return [moto.model, moto.engine, moto.engine_type_name, moto.color, moto.year]
+      .some((field) => String(field ?? '').toLowerCase().includes(query));
+  });
+});
 
 // Últimas motos consultadas
 const recentMotorcycles = ref([]);
@@ -561,7 +643,8 @@ const resetForm = () => {
     engine_type_id: null,
     color: '',
     price: 0,
-    description: ''
+    description: '',
+    image: ''
   };
   editingMoto.value = null;
 };
@@ -601,7 +684,8 @@ const editMoto = (moto) => {
     engine_type_id: moto.engine_type_id,
     color: moto.color,
     price: moto.price,
-    description: moto.description || ''
+    description: moto.description || '',
+    image: moto.image || ''
   };
   showAddDialog.value = true;
 };
@@ -797,6 +881,51 @@ onMounted(async () => {
   text-align: center;
   padding: 48px 24px;
   color: var(--hd-ink-muted);
+}
+
+/* Table Search */
+.table-search-field :deep(.v-field) {
+  background: var(--hd-surface-2);
+  border-radius: 8px;
+}
+
+.table-search-field :deep(.v-field__outline) {
+  color: var(--hd-line) !important;
+}
+
+.table-search-field :deep(.v-field--focused .v-field__outline) {
+  color: var(--hd-orange) !important;
+}
+
+/* Table Scroll */
+.table-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  border-radius: var(--hd-radius);
+}
+
+.table-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: var(--hd-surface-2);
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: var(--hd-orange);
+  border-radius: 4px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--hd-orange-strong);
+}
+
+.table-scroll :deep(thead th) {
+  position: sticky;
+  top: 0;
+  background: var(--hd-surface-2);
+  z-index: 1;
 }
 
 /* Motorcycles Grid */

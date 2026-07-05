@@ -34,4 +34,10 @@ export const engineTypesApi = {
     getMotorcycles: (id) => api.get(`/api/engine-types/${id}/motorcycles`)
 }
 
+// Auth API
+export const authApi = {
+    getMe: () => api.get('/api/auth/me'),
+    updateMe: (data) => api.put('/api/auth/me', data)
+}
+
 export default api
