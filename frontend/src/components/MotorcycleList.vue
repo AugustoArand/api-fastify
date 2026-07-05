@@ -26,7 +26,7 @@
       <div v-else class="motorcycles-container">
         <v-card
           v-for="motorcycle in motorcycles"
-          :key="motorcycle.id"
+          :key="motorcycle._id"
           class="mb-4 elevation-2 motorcycle-card"
           hover
         >
@@ -181,7 +181,7 @@ const confirmDelete = (motorcycle) => {
 const handleDelete = async () => {
   deleting.value = true
   try {
-    await motorcycleStore.deleteMotorcycle(motorcycleToDelete.value.id)
+    await motorcycleStore.deleteMotorcycle(motorcycleToDelete.value._id)
     showSnackbar('Moto excluída com sucesso!', 'success')
     deleteDialog.value = false
     motorcycleToDelete.value = null

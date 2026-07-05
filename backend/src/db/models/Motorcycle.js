@@ -23,6 +23,26 @@ const motorcycleSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    displacement: {
+      type: String,   // ex: "1200cc", "107 cu in"
+      trim: true,
+    },
+    power: {
+      type: String,   // ex: "90 HP @ 5000 RPM"
+      trim: true,
+    },
+    torque: {
+      type: String,   // ex: "100 Nm @ 3500 RPM"
+      trim: true,
+    },
+    category: {
+      type: String,   // ex: "Cruiser", "Touring", "Sport"
+      trim: true,
+    },
+    image: {
+      type: String,   // URL da imagem
+      trim: true,
+    },
     price: {
       type: Number,
       required: true,
@@ -42,3 +62,4 @@ const motorcycleSchema = new mongoose.Schema(
 );
 
 export const Motorcycle = mongoose.model('Motorcycle', motorcycleSchema);
+

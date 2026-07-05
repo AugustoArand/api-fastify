@@ -60,7 +60,7 @@ export const useMotorcycleStore = defineStore('motorcycles', () => {
 
         try {
             const response = await motorcyclesApi.update(id, data)
-            const index = motorcycles.value.findIndex(m => m.id === id)
+            const index = motorcycles.value.findIndex(m => m._id === id)
 
             if (index !== -1) {
                 motorcycles.value[index] = response.data
@@ -82,7 +82,7 @@ export const useMotorcycleStore = defineStore('motorcycles', () => {
 
         try {
             await motorcyclesApi.delete(id)
-            motorcycles.value = motorcycles.value.filter(m => m.id !== id)
+            motorcycles.value = motorcycles.value.filter(m => m._id !== id)
         } catch (err) {
             error.value = err.response?.data?.error || err.message
             throw new Error(error.value)
