@@ -1,5 +1,5 @@
 import { UserService } from '../services/userService.js';
-import { registerSchema, loginSchema } from '../schemas/user.js';
+import { registerSchema, loginSchema, updateProfileSchema } from '../schemas/user.js';
 
 export async function authRoutes(fastify, options) {
   // Rota de registro
@@ -101,12 +101,64 @@ export async function authRoutes(fastify, options) {
     }
   });
 
-  // Rota protegida de teste
+  // Rota para obter dados do usuário autenticado
   fastify.get('/me', {
     onRequest: [fastify.authenticate]
   }, async (request, reply) => {
+    const user = await UserService.findById(request.user.id);
+
+    if (!user) {
+      return reply.code(404).send({ error: 'Usuário não encontrado' });
+    }
+
     return {
-      user: request.user
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        created_at: user.createdAt
+      }
     };
+  });
+
+  // Rota para atualizar dados do usuário autenticado
+  fastify.put('/me', {
+    onRequest: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const validatedData = updateProfileSchema.parse(request.body);
+
+      const updatedUser = await UserService.update(request.user.id, validatedData);
+
+      const token = fastify.jwt.sign({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name
+      });
+
+      return {
+        message: 'Perfil atualizado com sucesso',
+        user: updatedUser,
+        token
+      };
+    } catch (error) {
+      if (error.name === 'ZodError') {
+        return reply.code(400).send({
+          error: 'Dados inválidos',
+          details: error.errors
+        });
+      }
+
+      if (error.message === 'Email já cadastrado' || error.message === 'Senha atual incorreta') {
+        return reply.code(409).send({ error: error.message });
+      }
+
+      if (error.message === 'Usuário não encontrado') {
+        return reply.code(404).send({ error: error.message });
+      }
+
+      console.error('Erro ao atualizar perfil:', error);
+      return reply.code(500).send({ error: 'Erro ao atualizar perfil' });
+    }
   });
 }

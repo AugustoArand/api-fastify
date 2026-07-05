@@ -5,7 +5,9 @@ import mongoose from 'mongoose';
 
 export default async function motorcycleRoutes(fastify, options) {
   // Criar uma nova moto
-  fastify.post('/api/motorcycles', async (request, reply) => {
+  fastify.post('/api/motorcycles', {
+    onRequest: [fastify.authenticate]
+  }, async (request, reply) => {
     try {
       const data = motorcycleSchema.parse(request.body);
 
@@ -22,6 +24,7 @@ export default async function motorcycleRoutes(fastify, options) {
         engine: data.engine,
         price: data.price,
         description: data.description,
+        image: data.image || undefined,
         engineType: engineTypeRef,
       });
 
@@ -72,7 +75,9 @@ export default async function motorcycleRoutes(fastify, options) {
   });
 
   // Atualizar uma moto
-  fastify.put('/api/motorcycles/:id', async (request, reply) => {
+  fastify.put('/api/motorcycles/:id', {
+    onRequest: [fastify.authenticate]
+  }, async (request, reply) => {
     try {
       const { id } = request.params;
 
@@ -82,7 +87,7 @@ export default async function motorcycleRoutes(fastify, options) {
 
       const data = updateMotorcycleSchema.parse(request.body);
 
-      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description'];
+      const allowedFields = ['model', 'year', 'color', 'engine', 'price', 'description', 'image'];
       const updateData = {};
 
       for (const field of allowedFields) {
@@ -119,7 +124,9 @@ export default async function motorcycleRoutes(fastify, options) {
   });
 
   // Deletar uma moto
-  fastify.delete('/api/motorcycles/:id', async (request, reply) => {
+  fastify.delete('/api/motorcycles/:id', {
+    onRequest: [fastify.authenticate]
+  }, async (request, reply) => {
     try {
       const { id } = request.params;
 

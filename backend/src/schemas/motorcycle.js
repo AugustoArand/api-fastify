@@ -15,7 +15,8 @@ export const motorcycleSchema = z.object({
   engine: z.string().optional(),
   engine_type_id: z.string().regex(objectIdRegex, 'ID de tipo de motor inválido').nullable().optional(),
   price: z.number().positive('Preço deve ser positivo'),
-  description: z.string().optional()
+  description: z.string().optional(),
+  image: z.string().url('URL de imagem inválida').optional().or(z.literal(''))
 });
 
 export const updateMotorcycleSchema = z.object({
@@ -28,7 +29,8 @@ export const updateMotorcycleSchema = z.object({
   engine: z.string().optional(),
   engine_type_id: z.string().regex(objectIdRegex, 'ID de tipo de motor inválido').nullable().optional(),
   price: z.number().positive().optional(),
-  description: z.string().optional()
+  description: z.string().optional(),
+  image: z.string().url('URL de imagem inválida').optional().or(z.literal(''))
 });
 
 export const motorcycleIdSchema = z.object({
